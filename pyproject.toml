@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "finalproject_<фамилия>_<группа>"
+version = "0.1.0"
+description = "ValutaTrade Hub: Core+CLI платформа для симуляции валютной торговли"
+authors = ["<Ваше Имя> <<email@example.com>>"]
+readme = "README.md"
+packages = [ { include = "valutatrade_hub" } ]
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+prettytable = "^3.10.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.9"
+
+
+[tool.poetry.scripts]
+project = "valutatrade_hub.cli.interface:main"
+
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"

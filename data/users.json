@@ -1,0 +1,9 @@
+[
+{
+ "user_id": 1,
+ "username": "alice",
+ "hashed_password": "3e2a19...",
+ "salt": "x5T9!",
+ "registration_date": "2025-10-09T12:00:00"
+}
+]
