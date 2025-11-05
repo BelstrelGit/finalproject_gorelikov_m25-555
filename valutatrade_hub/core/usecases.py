@@ -1,7 +1,8 @@
-
+# stdlib only
 import json
 import time
 import hashlib
+
 
 from valutatrade_hub.core.exceptions import (
     InsufficientFundsError,
@@ -10,11 +11,23 @@ from valutatrade_hub.core.exceptions import (
 )
 from valutatrade_hub.core.currencies import get_currency
 
-# ---------- storage paths ----------
-USERS_PATH = "data/users.json"
-PORTFOLIOS_PATH = "data/portfolios.json"
-SESSION_PATH = "data/session.json"
-RATES_PATH = "data/rates.json"
+# ДОБАВИТЬ:
+from valutatrade_hub.infra.settings import SettingsLoader
+
+# создать singleton (если он уже создан в другом месте, вернётся тот же инстанс)
+_settings = SettingsLoader()
+
+# заменить константы путей так:
+USERS_PATH = _settings.users_path()
+PORTFOLIOS_PATH = _settings.portfolios_path()
+SESSION_PATH = _settings.session_path()
+RATES_PATH = _settings.rates_path()
+
+
+
+# (опционально) можно использовать дефолтную базовую валюту:
+# DEFAULT_BASE = _settings.default_base_currency()
+
 
 # ---------- json helpers ----------
 def _load_json(path, default):
@@ -259,13 +272,13 @@ def login(username: str, password: str) -> str:
     _set_session(int(u["user_id"]), username)
     return f"Вы вошли как '{username}'"
 
-def show_portfolio(base_currency: str = "USD") -> str:
-    # 1) логин
+def show_portfolio(base_currency: str = None) -> str:
     sess = _require_session()
-    user_id = int(sess["user_id"])
-    username = str(sess["username"])
+    user_id = int(sess["user_id"]); username = str(sess["username"])
 
-    # 2) загрузить портфель
+    # если не передали --base, берём из Singleton-настроек
+    base = _currency_ok(base_currency) if base_currency else _currency_ok(_DEFAULT_BASE)
+
     wallets = _load_user_portfolio(user_id)
     if not wallets:
         return "У вас пока нет кошельков. Добавьте валюту покупкой (команда buy)."
@@ -327,6 +340,7 @@ def buy(currency: str, amount) -> str:
     get_currency(code)
 
     amt = _pos_amount(amount)
+
     wallets = _load_user_portfolio(user_id)
 
     prev = float(wallets.get(code, {}).get("balance", 0.0))
@@ -413,6 +427,18 @@ def get_rate(frm: str, to: str) -> str:
     get_currency(t)
 
     rate, ts = _get_rate_pair(f, t)
+    # <-- ЗДЕСЬ точка применения Singleton-политики свежести
+    # if ts:
+    #     try:
+    #         ts_struct = time.strptime(ts, "%Y-%m-%dT%H:%M:%S")  # предполагаем UTC-строку
+    #         ts_sec = time.mktime(ts_struct)  # упрощённо; или оставить пометку TODO
+    #         if time.time() - ts_sec > _RATES_TTL:
+    #             # здесь можно: либо предупредить, либо инициировать обновление из Parser Service
+    #             # raise ApiRequestError("данные курсов устарели")  # если нужно жёстко
+    #             pass
+    #     except Exception:
+    #         pass
+
     back_rate = 1.0 if rate == 0 else (1.0 / rate)
 
     ts_str = ts if ts else "неизвестно"
