@@ -1,9 +1,4 @@
-
-
-
-
 from valutatrade_hub.core.exceptions import CurrencyNotFoundError
-
 
 class Currency:
     """
@@ -25,17 +20,14 @@ class Currency:
         c = code.strip().upper()
         if " " in c or not (2 <= len(c) <= 5):
             raise ValueError("code: верхний регистр, длина 2..5, без пробелов")
-
         self.name = name.strip()
         self.code = c
 
-    # “абстрактный” метод
     def get_display_info(self) -> str:
         raise NotImplementedError("Currency.get_display_info должен быть переопределён")
 
     def __repr__(self) -> str:
         return f"<Currency code={self.code} name={self.name}>"
-
 
 class FiatCurrency(Currency):
     """
@@ -53,7 +45,6 @@ class FiatCurrency(Currency):
     def get_display_info(self) -> str:
         # Пример формата: [FIAT] USD — US Dollar (Issuing: United States)
         return f"[FIAT] {self.code} — {self.name} (Issuing: {self.issuing_country})"
-
 
 class CryptoCurrency(Currency):
     """
@@ -73,13 +64,11 @@ class CryptoCurrency(Currency):
             raise ValueError("market_cap должен быть числом")
         if mc < 0:
             raise ValueError("market_cap не может быть отрицательным")
-
         self.algorithm = algorithm.strip()
         self.market_cap = mc
 
     def _fmt_mcap(self) -> str:
-        # Краткая научная форма, как в примере: 1.12e12
-        return f"{self.market_cap:.2e}"
+        return f"{self.market_cap:.2e}".replace("+", "")
 
     def get_display_info(self) -> str:
         # Пример: [CRYPTO] BTC — Bitcoin (Algo: SHA-256, MCAP: 1.12e12)
@@ -94,9 +83,7 @@ _REGISTRY = {
     "EUR": FiatCurrency(name="Euro", code="EUR", issuing_country="Eurozone"),
     "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12),
     "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=4.50e11),
-    # при желании добавляй RUB, GBP, USDT и т.д.
 }
-
 
 def register_currency(currency: Currency) -> None:
     """
@@ -106,16 +93,18 @@ def register_currency(currency: Currency) -> None:
         raise ValueError("Можно регистрировать только объекты Currency")
     _REGISTRY[currency.code] = currency
 
-
 def get_currency(code: str) -> Currency:
     """
     Фабрика валют: вернуть объект Currency по коду.
     Если код неизвестен — CurrencyNotFoundError.
     """
     if not isinstance(code, str) or not code.strip():
-        raise CurrencyNotFoundError("Пустой валютный код")
+        raise CurrencyNotFoundError(code or "")
     c = code.strip().upper()
     cur = _REGISTRY.get(c)
     if cur is None:
-        raise CurrencyNotFoundError(f"Валюта '{c}' не найдена")
+        raise CurrencyNotFoundError(c)
     return cur
+
+def list_supported_codes() -> list[str]:
+    return sorted(_REGISTRY.keys())

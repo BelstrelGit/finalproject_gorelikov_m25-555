@@ -1,7 +1,14 @@
-# stdlib only
+
 import json
 import time
 import hashlib
+
+from valutatrade_hub.core.exceptions import (
+    InsufficientFundsError,
+    CurrencyNotFoundError,
+    ApiRequestError,
+)
+from valutatrade_hub.core.currencies import get_currency
 
 # ---------- storage paths ----------
 USERS_PATH = "data/users.json"
@@ -316,8 +323,10 @@ def buy(currency: str, amount) -> str:
     user_id = int(sess["user_id"])
 
     code = _cur(currency)
-    amt = _pos_amount(amount)
+    # валидация существования валюты (даст CurrencyNotFoundError при неизвестной)
+    get_currency(code)
 
+    amt = _pos_amount(amount)
     wallets = _load_user_portfolio(user_id)
 
     prev = float(wallets.get(code, {}).get("balance", 0.0))
@@ -330,11 +339,10 @@ def buy(currency: str, amount) -> str:
 
     usd_prev = float(wallets.get("USD", {}).get("balance", 0.0))
     if usd_prev < cost_usd:
-        raise ValueError(f"Недостаточно USD: доступно {usd_prev:.2f} USD, требуется {cost_usd:.2f} USD")
+        raise InsufficientFundsError(available=usd_prev, required=cost_usd, code="USD")
 
     wallets["USD"] = {"balance": usd_prev - cost_usd}
     wallets[code] = {"balance": prev + amt}
-
     _save_user_portfolio(user_id, wallets)
 
     return (
@@ -359,15 +367,17 @@ def sell(currency: str, amount) -> str:
 
     code = _cur(currency)
     if code == "USD":
-        # при желании можно убрать запрет, чтобы просто уменьшать USD
         raise ValueError("Продажа USD не поддерживается. Укажите другую валюту.")
-    amt = _pos_amount(amount)
 
+    # валидируем код (даст CurrencyNotFoundError, если неизвестен)
+    get_currency(code)
+
+    amt = _pos_amount(amount)
     wallets = _load_user_portfolio(user_id)
 
     prev = float(wallets.get(code, {}).get("balance", 0.0))
     if prev < amt:
-        raise ValueError(f"Недостаточно средств: доступно {prev:.4f} {code}, требуется {amt:.4f} {code}")
+        raise InsufficientFundsError(available=prev, required=amt, code=code)
 
     try:
         rate, _ts = _get_rate_pair(code, "USD")
@@ -379,7 +389,6 @@ def sell(currency: str, amount) -> str:
 
     wallets[code] = {"balance": prev - amt}
     wallets["USD"] = {"balance": usd_prev + revenue_usd}
-
     _save_user_portfolio(user_id, wallets)
 
     return (
@@ -390,6 +399,7 @@ def sell(currency: str, amount) -> str:
         f"Оценочная выручка: {revenue_usd:.2f} USD"
     )
 
+
 def get_rate(frm: str, to: str) -> str:
     """
     Курс frm→to (из кеша rates.json) и обратный курс.
@@ -397,6 +407,10 @@ def get_rate(frm: str, to: str) -> str:
     """
     f = _cur(frm)
     t = _cur(to)
+
+    # валидируем существование кодов (даст CurrencyNotFoundError при неизвестных)
+    get_currency(f)
+    get_currency(t)
 
     rate, ts = _get_rate_pair(f, t)
     back_rate = 1.0 if rate == 0 else (1.0 / rate)
