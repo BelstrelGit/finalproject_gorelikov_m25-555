@@ -2,12 +2,51 @@
 import json
 import time
 import hashlib
+from valutatrade_hub.decorators import log_action
 
-# ---------- storage paths ----------
-USERS_PATH = "data/users.json"
-PORTFOLIOS_PATH = "data/portfolios.json"
-SESSION_PATH = "data/session.json"
-RATES_PATH = "data/rates.json"
+
+
+# новенькое
+from valutatrade_hub.core.currencies import get_currency
+from valutatrade_hub.core.exceptions import (
+    InsufficientFundsError,
+    CurrencyNotFoundError,
+    ApiRequestError,
+)
+from valutatrade_hub.core.models import Wallet
+from valutatrade_hub.decorators import log_action
+from valutatrade_hub.infra.settings import SettingsLoader
+
+
+from valutatrade_hub.core.exceptions import (
+    InsufficientFundsError,
+    CurrencyNotFoundError,
+    ApiRequestError,
+)
+from valutatrade_hub.core.currencies import get_currency
+
+# ДОБАВИТЬ:
+from valutatrade_hub.infra.settings import SettingsLoader
+
+# создать singleton (если он уже создан в другом месте, вернётся тот же инстанс)
+
+from valutatrade_hub.infra.settings import SettingsLoader
+
+_settings = SettingsLoader()
+
+USERS_PATH      = _settings.get("USERS_PATH", "data/users.json")
+PORTFOLIOS_PATH = _settings.get("PORTFOLIOS_PATH", "data/portfolios.json")
+SESSION_PATH    = _settings.get("SESSION_PATH", "data/session.json")
+RATES_PATH      = _settings.get("RATES_PATH", "data/rates.json")
+
+_DEFAULT_BASE = _settings.get("DEFAULT_BASE_CURRENCY", "USD")
+_RATES_TTL    = int(_settings.get("RATES_TTL_SECONDS", 300))
+
+
+
+# (опционально) можно использовать дефолтную базовую валюту:
+# DEFAULT_BASE = _settings.default_base_currency()
+
 
 # ---------- json helpers ----------
 def _load_json(path, default):
@@ -203,6 +242,7 @@ def _currency_ok(code: str) -> str:
 
 # ============== PUBLIC USECASES ==============
 
+@log_action("REGISTER")
 def register(username: str, password: str) -> str:
     if not isinstance(username, str) or not username.strip():
         raise ValueError("Имя пользователя не может быть пустым")
@@ -233,6 +273,7 @@ def register(username: str, password: str) -> str:
 
     return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"
 
+@log_action("LOGIN")
 def login(username: str, password: str) -> str:
     if not isinstance(username, str) or not username.strip():
         raise ValueError("Имя пользователя не может быть пустым")
@@ -252,13 +293,13 @@ def login(username: str, password: str) -> str:
     _set_session(int(u["user_id"]), username)
     return f"Вы вошли как '{username}'"
 
-def show_portfolio(base_currency: str = "USD") -> str:
-    # 1) логин
+def show_portfolio(base_currency: str = None) -> str:
     sess = _require_session()
-    user_id = int(sess["user_id"])
-    username = str(sess["username"])
+    user_id = int(sess["user_id"]); username = str(sess["username"])
 
-    # 2) загрузить портфель
+    # если не передали --base, берём из Singleton-настроек
+    base = _currency_ok(base_currency) if base_currency else _currency_ok(_DEFAULT_BASE)
+
     wallets = _load_user_portfolio(user_id)
     if not wallets:
         return "У вас пока нет кошельков. Добавьте валюту покупкой (команда buy)."
@@ -302,72 +343,82 @@ def show_portfolio(base_currency: str = "USD") -> str:
     lines.append(f"ИТОГО: {total:,.2f} {base}")
     return "\n".join(lines)
 
+@log_action("BUY", verbose=True)
 def buy(currency: str, amount) -> str:
-    """
-    Покупка currency за USD:
-      - проверяем логин,
-      - amount > 0,
-      - создаём кошелёк currency при необходимости,
-      - считаем курс currency→USD и стоимость,
-      - списываем USD, начисляем currency,
-      - сохраняем портфель и выводим отчёт.
-    """
     sess = _require_session()
     user_id = int(sess["user_id"])
+    username = str(sess["username"])
 
-    code = _cur(currency)
+    # валидация кода валюты через реестр
+    code = _cur(currency)  # проверка формата
+    get_currency(code)     # бросит CurrencyNotFoundError при неизвестном коде
+
+    # валидация amount
     amt = _pos_amount(amount)
 
+    # портфель
     wallets = _load_user_portfolio(user_id)
 
-    prev = float(wallets.get(code, {}).get("balance", 0.0))
+    # текущие значения
+    prev_code = float(wallets.get(code, {}).get("balance", 0.0))
+    prev_usd  = float(wallets.get("USD", {}).get("balance", 0.0))
+
+    # курс currency->USD (для оценочной стоимости)
     try:
         rate, _ts = _get_rate_pair(code, "USD")
     except ValueError:
         raise ValueError(f"Не удалось получить курс для {code}→USD")
 
     cost_usd = amt * rate
+    if prev_usd < cost_usd:
+        # денег не хватает — по ТЗ бросаем InsufficientFundsError
+        raise InsufficientFundsError(available=prev_usd, required=cost_usd, code="USD")
 
-    usd_prev = float(wallets.get("USD", {}).get("balance", 0.0))
-    if usd_prev < cost_usd:
-        raise ValueError(f"Недостаточно USD: доступно {usd_prev:.2f} USD, требуется {cost_usd:.2f} USD")
+    # применяем через Wallet API
+    w_code = Wallet(currency_code=code, balance=prev_code)
+    w_usd  = Wallet(currency_code="USD", balance=prev_usd)
 
-    wallets["USD"] = {"balance": usd_prev - cost_usd}
-    wallets[code] = {"balance": prev + amt}
+    w_code.deposit(amt)
+    # снимем нужные USD (мы уже проверили баланс выше)
+    w_usd.withdraw(cost_usd)
 
+    # сохраняем
+    wallets[code] = {"balance": w_code.balance}
+    wallets["USD"] = {"balance": w_usd.balance}
     _save_user_portfolio(user_id, wallets)
 
     return (
         f"Покупка выполнена: {amt:.4f} {code} по курсу {rate:.2f} USD/{code}\n"
         f"Изменения в портфеле:\n"
-        f"- {code}: было {prev:.4f} → стало {prev + amt:.4f}\n"
-        f"- USD:  было {usd_prev:.2f} → стало {usd_prev - cost_usd:.2f}\n"
+        f"- {code}: было {prev_code:.4f} → стало {w_code.balance:.4f}\n"
+        f"- USD:  было {prev_usd:.2f} → стало {w_usd.balance:.2f}\n"
         f"Оценочная стоимость покупки: {cost_usd:.2f} USD"
     )
 
+
+@log_action("SELL", verbose=True)
 def sell(currency: str, amount) -> str:
-    """
-    Продажа currency за USD:
-      - проверяем логин,
-      - amount > 0,
-      - кошелёк currency должен существовать и хватать средств,
-      - считаем курс currency→USD и выручку,
-      - уменьшаем currency, начисляем USD.
-    """
     sess = _require_session()
     user_id = int(sess["user_id"])
+    username = str(sess["username"])
 
     code = _cur(currency)
     if code == "USD":
-        # при желании можно убрать запрет, чтобы просто уменьшать USD
+        # по требованиям проекта мы не «продаём» USD
         raise ValueError("Продажа USD не поддерживается. Укажите другую валюту.")
-    amt = _pos_amount(amount)
 
+    # проверка существования кода
+    get_currency(code)  # может бросить CurrencyNotFoundError
+
+    amt = _pos_amount(amount)
     wallets = _load_user_portfolio(user_id)
 
-    prev = float(wallets.get(code, {}).get("balance", 0.0))
-    if prev < amt:
-        raise ValueError(f"Недостаточно средств: доступно {prev:.4f} {code}, требуется {amt:.4f} {code}")
+    prev_code = float(wallets.get(code, {}).get("balance", 0.0))
+    prev_usd  = float(wallets.get("USD", {}).get("balance", 0.0))
+
+    if prev_code < amt:
+        # по ТЗ — InsufficientFundsError
+        raise InsufficientFundsError(available=prev_code, required=amt, code=code)
 
     try:
         rate, _ts = _get_rate_pair(code, "USD")
@@ -375,34 +426,90 @@ def sell(currency: str, amount) -> str:
         raise ValueError(f"Не удалось получить курс для {code}→USD")
 
     revenue_usd = amt * rate
-    usd_prev = float(wallets.get("USD", {}).get("balance", 0.0))
 
-    wallets[code] = {"balance": prev - amt}
-    wallets["USD"] = {"balance": usd_prev + revenue_usd}
+    w_code = Wallet(currency_code=code, balance=prev_code)
+    w_usd  = Wallet(currency_code="USD", balance=prev_usd)
 
+    w_code.withdraw(amt)     # может бросить ValueError, но мы уже проверили баланс
+    w_usd.deposit(revenue_usd)
+
+    wallets[code] = {"balance": w_code.balance}
+    wallets["USD"] = {"balance": w_usd.balance}
     _save_user_portfolio(user_id, wallets)
 
     return (
         f"Продажа выполнена: {amt:.4f} {code} по курсу {rate:.2f} USD/{code}\n"
         f"Изменения в портфеле:\n"
-        f"- {code}: было {prev:.4f} → стало {prev - amt:.4f}\n"
-        f"- USD:  было {usd_prev:.2f} → стало {usd_prev + revenue_usd:.2f}\n"
+        f"- {code}: было {prev_code:.4f} → стало {w_code.balance:.4f}\n"
+        f"- USD:  было {prev_usd:.2f} → стало {w_usd.balance:.2f}\n"
         f"Оценочная выручка: {revenue_usd:.2f} USD"
     )
 
 def get_rate(frm: str, to: str) -> str:
-    """
-    Курс frm→to (из кеша rates.json) и обратный курс.
-    Если пары нет — сообщение об ошибке по ТЗ.
-    """
     f = _cur(frm)
     t = _cur(to)
 
-    rate, ts = _get_rate_pair(f, t)
-    back_rate = 1.0 if rate == 0 else (1.0 / rate)
+    # валидация валют через реестр (может кинуть CurrencyNotFoundError)
+    get_currency(f)
+    get_currency(t)
 
+    # проверка свежести кеша
+    raw = _get_rates_raw()
+    last_refresh = ""
+    if isinstance(raw, dict):
+        last_refresh = str(raw.get("last_refresh") or "")
+
+    if _is_stale(last_refresh, _RATES_TTL):
+        # пробуем «обновить» (на этом этапе заглушка)
+        ok = _maybe_refresh_rates()
+        if not ok:
+            raise ApiRequestError("данные курсов устарели")
+
+    # курс и метка времени пары
+    rate, ts = _get_rate_pair(f, t)
+    # <-- ЗДЕСЬ точка применения Singleton-политики свежести
+    # if ts:
+    #     try:
+    #         ts_struct = time.strptime(ts, "%Y-%m-%dT%H:%M:%S")  # предполагаем UTC-строку
+    #         ts_sec = time.mktime(ts_struct)  # упрощённо; или оставить пометку TODO
+    #         if time.time() - ts_sec > _RATES_TTL:
+    #             # здесь можно: либо предупредить, либо инициировать обновление из Parser Service
+    #             # raise ApiRequestError("данные курсов устарели")  # если нужно жёстко
+    #             pass
+    #     except Exception:
+    #         pass
+
+    back_rate = 1.0 if rate == 0 else (1.0 / rate)
     ts_str = ts if ts else "неизвестно"
+
     return (
         f"Курс {f}→{t}: {rate:.8f} (обновлено: {ts_str})\n"
         f"Обратный курс {t}→{f}: {back_rate:.5f}"
     )
+
+
+def _parse_iso(ts: str) -> float:
+    """'2025-10-09T10:35:00' -> epoch seconds (0.0 если не парсится)."""
+    try:
+        # отбрасываем дробные секунды, если есть
+        ts = ts.split(".")[0]
+        tt = time.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+        return time.mktime(tt)
+    except Exception:
+        return 0.0
+
+def _is_stale(ts: str, ttl: int) -> bool:
+    if not ts:
+        return True
+    return (time.time() - _parse_iso(ts)) > ttl
+
+def _maybe_refresh_rates() -> bool:
+    """
+    Заглушка «обновления» кеша курсов (Parser Service пока не подключён).
+    Возвращаем False — чтобы сработал ApiRequestError при устаревшем кешe.
+    """
+    return False
+
+def _get_rates_raw() -> dict:
+    """Возвращает raw словарь из rates.json (со служебными полями)."""
+    return _load_json(RATES_PATH, {})

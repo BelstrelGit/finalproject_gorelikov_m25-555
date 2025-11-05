@@ -1,5 +1,11 @@
 import shlex
 from valutatrade_hub.core import usecases as uc
+from valutatrade_hub.core.exceptions import (
+    InsufficientFundsError,
+    CurrencyNotFoundError,
+    ApiRequestError,
+)
+from valutatrade_hub.core.currencies import list_supported_codes
 
 HELP = """Команды:
   register        --username <str> --password <str>
@@ -68,10 +74,21 @@ def main():
             elif cmd == "sell":
                 print(uc.sell(flags.get("currency", ""), flags.get("amount", "")))
             elif cmd == "get-rate":
-                frm = flags.get("from", "")
-                to = flags.get("to", "")
-                print(uc.get_rate(frm, to))
+                print(uc.get_rate(flags.get("from", ""), flags.get("to", "")))
             else:
                 print("Неизвестная команда. Введите 'help'.")
+        except InsufficientFundsError as e:
+            # Печатаем как есть (сообщение уже в нужном формате)
+            print(e)
+        except CurrencyNotFoundError as e:
+            # Подсказка и список кодов
+            print(e)
+            codes = ", ".join(list_supported_codes())
+            print(f"Поддерживаемые коды: {codes}")
+            print("Подсказка: используйте 'get-rate --from USD --to <CODE>' для проверки курса.")
+        except ApiRequestError as e:
+            print(e)
+            print("Попробуйте повторить позже или проверьте подключение к сети.")
         except Exception as e:
+            # Остальные — как есть
             print(e)

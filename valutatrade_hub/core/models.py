@@ -1,9 +1,9 @@
 
 
-
-
-import time
+from typing import Optional, Dict
+# import time
 import hashlib
+from typing import Optional
 
 
 def _utc_iso_now() -> str:
@@ -219,7 +219,12 @@ class Portfolio:
       wallets (read-only; возвращает копию словаря)
     """
 
-    def __init__(self, user_id: int, wallets: dict[str, "Wallet"] | None = None, user: "User" | None = None) -> None:
+    def __init__(
+            self,
+            user_id: int,
+            wallets: Optional[Dict[str, "Wallet"]] = None,
+            user: Optional["User"] = None,
+    ) -> None:
         self._user_id = int(user_id)
         self._wallets: dict[str, Wallet] = {}
         if wallets:
