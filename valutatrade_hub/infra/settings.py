@@ -79,3 +79,25 @@ class SettingsLoader:
         # сброс и повторная загрузка
         self._cfg = dict(self._DEFAULTS)
         self._load()
+
+    # --- удобные геттеры путей ---
+    def users_path(self) -> str:
+        return self.get("USERS_PATH", "data/users.json")
+
+    def portfolios_path(self) -> str:
+        return self.get("PORTFOLIOS_PATH", "data/portfolios.json")
+
+    def rates_path(self) -> str:
+        return self.get("RATES_PATH", "data/rates.json")
+
+    def session_path(self) -> str:
+        return self.get("SESSION_PATH", "data/session.json")
+
+    def default_base_currency(self) -> str:
+        return self.get("DEFAULT_BASE_CURRENCY", "USD")
+
+    def rates_ttl_seconds(self) -> int:
+        try:
+            return int(self.get("RATES_TTL_SECONDS", 300))
+        except Exception:
+            return 300

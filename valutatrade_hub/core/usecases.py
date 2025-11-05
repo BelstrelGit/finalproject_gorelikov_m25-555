@@ -2,6 +2,8 @@
 import json
 import time
 import hashlib
+from valutatrade_hub.decorators import log_action
+
 
 
 from valutatrade_hub.core.exceptions import (
@@ -15,13 +17,15 @@ from valutatrade_hub.core.currencies import get_currency
 from valutatrade_hub.infra.settings import SettingsLoader
 
 # создать singleton (если он уже создан в другом месте, вернётся тот же инстанс)
+
+from valutatrade_hub.infra.settings import SettingsLoader
+
 _settings = SettingsLoader()
 
-# заменить константы путей так:
-USERS_PATH = _settings.users_path()
+USERS_PATH      = _settings.users_path()
 PORTFOLIOS_PATH = _settings.portfolios_path()
-SESSION_PATH = _settings.session_path()
-RATES_PATH = _settings.rates_path()
+SESSION_PATH    = _settings.session_path()
+RATES_PATH      = _settings.rates_path()
 
 
 
@@ -223,6 +227,7 @@ def _currency_ok(code: str) -> str:
 
 # ============== PUBLIC USECASES ==============
 
+@log_action("REGISTER")
 def register(username: str, password: str) -> str:
     if not isinstance(username, str) or not username.strip():
         raise ValueError("Имя пользователя не может быть пустым")
@@ -253,6 +258,7 @@ def register(username: str, password: str) -> str:
 
     return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"
 
+@log_action("LOGIN")
 def login(username: str, password: str) -> str:
     if not isinstance(username, str) or not username.strip():
         raise ValueError("Имя пользователя не может быть пустым")
@@ -322,6 +328,7 @@ def show_portfolio(base_currency: str = None) -> str:
     lines.append(f"ИТОГО: {total:,.2f} {base}")
     return "\n".join(lines)
 
+@log_action("BUY", verbose=True)
 def buy(currency: str, amount) -> str:
     """
     Покупка currency за USD:
@@ -367,6 +374,7 @@ def buy(currency: str, amount) -> str:
         f"Оценочная стоимость покупки: {cost_usd:.2f} USD"
     )
 
+@log_action("SELL", verbose=True)
 def sell(currency: str, amount) -> str:
     """
     Продажа currency за USD:
