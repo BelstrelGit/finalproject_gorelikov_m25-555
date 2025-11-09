@@ -25,7 +25,8 @@ ruff = "^0.6.9"
 
 
 [tool.poetry.scripts]
-project = "valutatrade_hub.cli.interface:main"
+#project = "valutatrade_hub.cli.interface:main"
+project = "main:main"
 
 
 [build-system]
