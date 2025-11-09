@@ -62,7 +62,6 @@ class CoinGeckoClient(BaseApiClient):
             "ids": ",".join(ids),
             "vs_currencies": self._quote_currency,
         })
-        print(f"query= {query}")
 
         url = f"{self._cfg.COINGECKO_URL}?{query}"
         try:
