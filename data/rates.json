@@ -1,29 +1,29 @@
 {
   "BTC_USD": {
-    "rate": 102653.0,
-    "updated_at": "2025-11-09T13:37:48"
+    "rate": 102636.0,
+    "updated_at": "2025-11-09T13:39:41"
   },
   "ETH_USD": {
-    "rate": 3450.74,
-    "updated_at": "2025-11-09T13:37:48"
+    "rate": 3448.77,
+    "updated_at": "2025-11-09T13:39:41"
   },
   "EUR_USD": {
     "rate": 0.8649,
-    "updated_at": "2025-11-09T13:37:58"
+    "updated_at": "2025-11-09T13:39:41"
   },
   "GBP_USD": {
     "rate": 0.7609,
-    "updated_at": "2025-11-09T13:37:58"
+    "updated_at": "2025-11-09T13:39:41"
   },
   "RUB_USD": {
     "rate": 80.9663,
-    "updated_at": "2025-11-09T13:37:58"
+    "updated_at": "2025-11-09T13:39:41"
   },
   "SOL_USD": {
-    "rate": 159.75,
-    "updated_at": "2025-11-09T13:37:48"
+    "rate": 159.8,
+    "updated_at": "2025-11-09T13:39:41"
   },
-  "last_refresh": "2025-11-09T13:37:58",
-  "last_refresh_epoch": 1762695478,
+  "last_refresh": "2025-11-09T13:39:41",
+  "last_refresh_epoch": 1762695581,
   "source": "ParserService"
 }
