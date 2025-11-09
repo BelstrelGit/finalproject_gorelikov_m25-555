@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 
+
 @dataclass(frozen=True)
 class ParserConfig:
     """
@@ -36,8 +37,8 @@ class ParserConfig:
     )
 
     # --- Пути к файлам ---
-    RATES_FILE_PATH: str = "data/rates.json"              # локальный кэш для Core Service
-    HISTORY_FILE_PATH: str = "data/exchange_rates.json"   # хранилище Parser Service (исторические данные).json
+    RATES_FILE_PATH: str = "data/rates.json"              # локальный кэш для Core Service # noqa: E501
+    HISTORY_FILE_PATH: str = "data/exchange_rates.json"   # хранилище Parser Service (исторические данные).json # noqa: E501
 
     # --- Параметры запросов ---
     REQUEST_TIMEOUT: int = 10  # секунд

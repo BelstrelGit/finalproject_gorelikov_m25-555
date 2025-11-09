@@ -1,0 +1,998 @@
+[
+  {
+    "ts": "2025-11-08T07:24:50",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T07:24:50"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T07:24:50"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T07:24:50"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T07:24:55",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T07:24:55"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T07:24:55"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T07:24:55"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T07:33:34",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101988.0,
+        "updated_at": "2025-11-08T07:33:34"
+      },
+      "ETH_USD": {
+        "rate": 3430.02,
+        "updated_at": "2025-11-08T07:33:34"
+      },
+      "SOL_USD": {
+        "rate": 159.98,
+        "updated_at": "2025-11-08T07:33:34"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T07:33:40",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T07:33:40"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T07:33:40"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T07:33:40"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T07:33:45",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101988.0,
+        "updated_at": "2025-11-08T07:33:45"
+      },
+      "ETH_USD": {
+        "rate": 3430.02,
+        "updated_at": "2025-11-08T07:33:45"
+      },
+      "SOL_USD": {
+        "rate": 159.98,
+        "updated_at": "2025-11-08T07:33:45"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T07:33:45"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T07:33:45"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T07:33:45"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T07:34:32",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101988.0,
+        "updated_at": "2025-11-08T07:34:32"
+      },
+      "ETH_USD": {
+        "rate": 3430.02,
+        "updated_at": "2025-11-08T07:34:32"
+      },
+      "SOL_USD": {
+        "rate": 159.98,
+        "updated_at": "2025-11-08T07:34:32"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:26:12",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101644.0,
+        "updated_at": "2025-11-08T14:26:12"
+      },
+      "ETH_USD": {
+        "rate": 3381.89,
+        "updated_at": "2025-11-08T14:26:12"
+      },
+      "SOL_USD": {
+        "rate": 157.18,
+        "updated_at": "2025-11-08T14:26:12"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:26:12"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:26:12"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:26:12"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:26:53",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101644.0,
+        "updated_at": "2025-11-08T14:26:53"
+      },
+      "ETH_USD": {
+        "rate": 3381.89,
+        "updated_at": "2025-11-08T14:26:53"
+      },
+      "SOL_USD": {
+        "rate": 157.18,
+        "updated_at": "2025-11-08T14:26:53"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:26:53"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:26:53"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:26:53"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:27:17",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101670.0,
+        "updated_at": "2025-11-08T14:27:17"
+      },
+      "ETH_USD": {
+        "rate": 3383.46,
+        "updated_at": "2025-11-08T14:27:17"
+      },
+      "SOL_USD": {
+        "rate": 157.2,
+        "updated_at": "2025-11-08T14:27:17"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:27:23",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:27:23"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:27:23"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:27:23"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:27:39",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:27:39"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:27:39"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:27:39"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:27:45",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101670.0,
+        "updated_at": "2025-11-08T14:27:45"
+      },
+      "ETH_USD": {
+        "rate": 3383.46,
+        "updated_at": "2025-11-08T14:27:45"
+      },
+      "SOL_USD": {
+        "rate": 157.2,
+        "updated_at": "2025-11-08T14:27:45"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:27:59",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:27:59"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:27:59"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:27:59"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:28:21",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101667.0,
+        "updated_at": "2025-11-08T14:28:21"
+      },
+      "ETH_USD": {
+        "rate": 3383.96,
+        "updated_at": "2025-11-08T14:28:21"
+      },
+      "SOL_USD": {
+        "rate": 157.23,
+        "updated_at": "2025-11-08T14:28:21"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:28:21"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:28:21"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:28:21"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:28:47",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101667.0,
+        "updated_at": "2025-11-08T14:28:47"
+      },
+      "ETH_USD": {
+        "rate": 3383.96,
+        "updated_at": "2025-11-08T14:28:47"
+      },
+      "SOL_USD": {
+        "rate": 157.23,
+        "updated_at": "2025-11-08T14:28:47"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:29:03",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:29:03"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:29:03"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:29:03"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:42:53",
+    "source": "ParserService",
+    "pairs": {
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:29:03"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:29:03"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:29:03"
+      },
+      "BTC_USD": {
+        "rate": 101934.0,
+        "updated_at": "2025-11-08T14:42:53"
+      },
+      "ETH_USD": {
+        "rate": 3403.49,
+        "updated_at": "2025-11-08T14:42:53"
+      },
+      "SOL_USD": {
+        "rate": 157.67,
+        "updated_at": "2025-11-08T14:42:53"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:43:09",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101934.0,
+        "updated_at": "2025-11-08T14:42:53"
+      },
+      "ETH_USD": {
+        "rate": 3403.49,
+        "updated_at": "2025-11-08T14:42:53"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "SOL_USD": {
+        "rate": 157.67,
+        "updated_at": "2025-11-08T14:42:53"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:51:35",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101915.0,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "ETH_USD": {
+        "rate": 3403.14,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:43:09"
+      },
+      "SOL_USD": {
+        "rate": 157.63,
+        "updated_at": "2025-11-08T14:51:35"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:51:43",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101915.0,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "ETH_USD": {
+        "rate": 3403.14,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:51:43"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:51:43"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:51:43"
+      },
+      "SOL_USD": {
+        "rate": 157.63,
+        "updated_at": "2025-11-08T14:51:35"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:51:57",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101915.0,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "ETH_USD": {
+        "rate": 3403.14,
+        "updated_at": "2025-11-08T14:51:35"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "SOL_USD": {
+        "rate": 157.63,
+        "updated_at": "2025-11-08T14:51:35"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:58:30",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101833.0,
+        "updated_at": "2025-11-08T14:58:30"
+      },
+      "ETH_USD": {
+        "rate": 3401.1,
+        "updated_at": "2025-11-08T14:58:30"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:51:57"
+      },
+      "SOL_USD": {
+        "rate": 157.71,
+        "updated_at": "2025-11-08T14:58:30"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T14:58:40",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101833.0,
+        "updated_at": "2025-11-08T14:58:30"
+      },
+      "ETH_USD": {
+        "rate": 3401.1,
+        "updated_at": "2025-11-08T14:58:30"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T14:58:40"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T14:58:40"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T14:58:40"
+      },
+      "SOL_USD": {
+        "rate": 157.71,
+        "updated_at": "2025-11-08T14:58:30"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:00:29",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101823.0,
+        "updated_at": "2025-11-08T15:00:29"
+      },
+      "ETH_USD": {
+        "rate": 3399.59,
+        "updated_at": "2025-11-08T15:00:29"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:00:29"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:00:29"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:00:29"
+      },
+      "SOL_USD": {
+        "rate": 157.72,
+        "updated_at": "2025-11-08T15:00:29"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:01:19",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101823.0,
+        "updated_at": "2025-11-08T15:01:19"
+      },
+      "ETH_USD": {
+        "rate": 3399.59,
+        "updated_at": "2025-11-08T15:01:19"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:01:19"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:01:19"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:01:19"
+      },
+      "SOL_USD": {
+        "rate": 157.72,
+        "updated_at": "2025-11-08T15:01:19"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:01:37",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101808.0,
+        "updated_at": "2025-11-08T15:01:37"
+      },
+      "ETH_USD": {
+        "rate": 3399.35,
+        "updated_at": "2025-11-08T15:01:37"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:01:37"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:01:37"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:01:37"
+      },
+      "SOL_USD": {
+        "rate": 157.71,
+        "updated_at": "2025-11-08T15:01:37"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:11:53",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101843.0,
+        "updated_at": "2025-11-08T15:11:53"
+      },
+      "ETH_USD": {
+        "rate": 3398.56,
+        "updated_at": "2025-11-08T15:11:53"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:11:53"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:11:53"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:11:53"
+      },
+      "SOL_USD": {
+        "rate": 157.44,
+        "updated_at": "2025-11-08T15:11:53"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:36:27",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101516.0,
+        "updated_at": "2025-11-08T15:36:27"
+      },
+      "ETH_USD": {
+        "rate": 3379.67,
+        "updated_at": "2025-11-08T15:36:27"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:36:27"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:36:27"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:36:27"
+      },
+      "SOL_USD": {
+        "rate": 156.47,
+        "updated_at": "2025-11-08T15:36:27"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:38:36",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "ETH_USD": {
+        "rate": 3379.05,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "SOL_USD": {
+        "rate": 156.45,
+        "updated_at": "2025-11-08T15:38:36"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:39:12",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-08T15:39:12"
+      },
+      "ETH_USD": {
+        "rate": 3379.05,
+        "updated_at": "2025-11-08T15:39:12"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:38:36"
+      },
+      "SOL_USD": {
+        "rate": 156.45,
+        "updated_at": "2025-11-08T15:39:12"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:39:16",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-08T15:39:12"
+      },
+      "ETH_USD": {
+        "rate": 3379.05,
+        "updated_at": "2025-11-08T15:39:12"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:39:16"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:39:16"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:39:16"
+      },
+      "SOL_USD": {
+        "rate": 156.45,
+        "updated_at": "2025-11-08T15:39:12"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:43:09",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101592.0,
+        "updated_at": "2025-11-08T15:43:09"
+      },
+      "ETH_USD": {
+        "rate": 3377.67,
+        "updated_at": "2025-11-08T15:43:09"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:43:09"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:43:09"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:43:09"
+      },
+      "SOL_USD": {
+        "rate": 156.5,
+        "updated_at": "2025-11-08T15:43:09"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-08T15:59:41",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101639.0,
+        "updated_at": "2025-11-08T15:59:41"
+      },
+      "ETH_USD": {
+        "rate": 3375.29,
+        "updated_at": "2025-11-08T15:59:41"
+      },
+      "EUR_USD": {
+        "rate": 0.8648,
+        "updated_at": "2025-11-08T15:59:41"
+      },
+      "GBP_USD": {
+        "rate": 0.7611,
+        "updated_at": "2025-11-08T15:59:41"
+      },
+      "RUB_USD": {
+        "rate": 80.9546,
+        "updated_at": "2025-11-08T15:59:41"
+      },
+      "SOL_USD": {
+        "rate": 156.53,
+        "updated_at": "2025-11-08T15:59:41"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-09T03:39:17",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-09T03:39:17"
+      },
+      "ETH_USD": {
+        "rate": 3362.36,
+        "updated_at": "2025-11-09T03:39:17"
+      },
+      "EUR_USD": {
+        "rate": 0.8649,
+        "updated_at": "2025-11-09T03:39:17"
+      },
+      "GBP_USD": {
+        "rate": 0.7609,
+        "updated_at": "2025-11-09T03:39:17"
+      },
+      "RUB_USD": {
+        "rate": 80.9663,
+        "updated_at": "2025-11-09T03:39:17"
+      },
+      "SOL_USD": {
+        "rate": 155.54,
+        "updated_at": "2025-11-09T03:39:17"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-09T03:39:21",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "ETH_USD": {
+        "rate": 3362.36,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "EUR_USD": {
+        "rate": 0.8649,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "GBP_USD": {
+        "rate": 0.7609,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "RUB_USD": {
+        "rate": 80.9663,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "SOL_USD": {
+        "rate": 155.54,
+        "updated_at": "2025-11-09T03:39:21"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-09T03:39:50",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-09T03:39:50"
+      },
+      "ETH_USD": {
+        "rate": 3362.36,
+        "updated_at": "2025-11-09T03:39:50"
+      },
+      "EUR_USD": {
+        "rate": 0.8649,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "GBP_USD": {
+        "rate": 0.7609,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "RUB_USD": {
+        "rate": 80.9663,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "SOL_USD": {
+        "rate": 155.54,
+        "updated_at": "2025-11-09T03:39:50"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-09T03:39:59",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-09T03:39:59"
+      },
+      "ETH_USD": {
+        "rate": 3362.36,
+        "updated_at": "2025-11-09T03:39:59"
+      },
+      "EUR_USD": {
+        "rate": 0.8649,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "GBP_USD": {
+        "rate": 0.7609,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "RUB_USD": {
+        "rate": 80.9663,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "SOL_USD": {
+        "rate": 155.54,
+        "updated_at": "2025-11-09T03:39:59"
+      }
+    }
+  },
+  {
+    "ts": "2025-11-09T03:40:08",
+    "source": "ParserService",
+    "pairs": {
+      "BTC_USD": {
+        "rate": 101529.0,
+        "updated_at": "2025-11-09T03:40:08"
+      },
+      "ETH_USD": {
+        "rate": 3362.36,
+        "updated_at": "2025-11-09T03:40:08"
+      },
+      "EUR_USD": {
+        "rate": 0.8649,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "GBP_USD": {
+        "rate": 0.7609,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "RUB_USD": {
+        "rate": 80.9663,
+        "updated_at": "2025-11-09T03:39:21"
+      },
+      "SOL_USD": {
+        "rate": 155.54,
+        "updated_at": "2025-11-09T03:40:08"
+      }
+    }
+  }
+]

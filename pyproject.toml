@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "finalproject_<фамилия>_<группа>"
+name = "finalproject_gorelikov_М25-555"
 version = "0.1.0"
 description = "ValutaTrade Hub: Core+CLI платформа для симуляции валютной торговли"
-authors = ["<Ваше Имя> <<email@example.com>>"]
+authors = ["a.gorelikov <belstrel@gmail.com>"]
 readme = "README.md"
 packages = [ { include = "valutatrade_hub" } ]
 
@@ -11,6 +11,14 @@ packages = [ { include = "valutatrade_hub" } ]
 python = ">=3.10,<3.13"
 prettytable = "^3.10.0"
 
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+exclude = ["venv", ".venv", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.9"

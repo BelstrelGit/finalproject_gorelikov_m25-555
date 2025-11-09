@@ -11,7 +11,6 @@ from typing import Dict, List
 from valutatrade_hub.core.exceptions import ApiRequestError
 from valutatrade_hub.parser_service.config import ParserConfig
 
-
 # ------------------ Абстракция клиента ------------------
 
 class BaseApiClient(ABC):
@@ -80,7 +79,7 @@ class CoinGeckoClient(BaseApiClient):
             raise ApiRequestError(f"Ошибка при запросе CoinGecko: {e}") from e
 
         try:
-            data = json.load(raw)  # {"bitcoin":{"usd":...}, "ethereum":{"usd":...}, ...}
+            data = json.loads(raw)  # {"bitcoin":{"usd":...}, "ethereum":{"usd":...}, ...} # noqa: E501
         except Exception as e:
             raise ApiRequestError(f"Невалидный JSON от CoinGecko: {e}") from e
 
@@ -114,6 +113,7 @@ class ExchangeRateApiClient(BaseApiClient):
         self._base = (base or self._cfg.BASE_FIAT_CURRENCY).upper()
         self._codes = [c.upper() for c in (codes or list(self._cfg.FIAT_CURRENCIES))]
 
+
     def fetch_rates(self) -> Dict[str, float]:
         api_key = (self._cfg.EXCHANGERATE_API_KEY or "").strip()
         if not api_key:
@@ -125,9 +125,12 @@ class ExchangeRateApiClient(BaseApiClient):
             req = urllib.request.Request(url)
             req.add_header("User-Agent", "ValutaTradeHub/1.0 (stdlib-urllib)")
             with urllib.request.urlopen(req, timeout=self._cfg.REQUEST_TIMEOUT) as resp:
-                if resp.status != 200:
+                status = getattr(resp, "status", None)
+                if status is None:
+                    status = resp.getcode()
+                if status != 200:
                     # 401 — неверный ключ, 429 — лимит, 5xx — недоступность и т.п.
-                    raise ApiRequestError(f"ExchangeRate-API HTTP {resp.status}")
+                    raise ApiRequestError(f"ExchangeRate-API HTTP {status}")
                 raw = resp.read().decode("utf-8")
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             raise ApiRequestError(f"Ошибка сети ExchangeRate-API: {e}") from e
@@ -140,21 +143,29 @@ class ExchangeRateApiClient(BaseApiClient):
             raise ApiRequestError(f"Невалидный JSON от ExchangeRate-API: {e}") from e
 
         # проверка статуса API
-        if not isinstance(data, dict) or data.get("result") != "success":
+        if not isinstance(data, dict) or str(data.get("result", "")).lower() != "success": # noqa: E501
             msg = data.get("error-type") if isinstance(data, dict) else "unknown error"
             raise ApiRequestError(f"ExchangeRate-API ответ: {msg}")
 
-        rates = data.get("rates", {})
+        # ВАЖНО: у v6 часто 'conversion_rates'
+        rates = data.get("rates") or data.get("conversion_rates")
         if not isinstance(rates, dict):
-            raise ApiRequestError("ExchangeRate-API: отсутствует поле 'rates'")
+            raise ApiRequestError("ExchangeRate-API: отсутствуют 'rates'/'conversion_rates' в ответе") # noqa: E501
 
         out: Dict[str, float] = {}
         for code in self._codes:
             if code == self._base:
-                continue  # пропускаем BASE_BASE
+                # можно оставить пропуск; при желании можно писать 1.0
+                continue
             try:
                 out[f"{code}_{self._base}"] = float(rates[code])
             except Exception:
                 # нет такого кода в ответе — пропускаем
                 pass
+
+        if not out:
+            raise ApiRequestError(
+                f"ExchangeRate-API: ни одного курса из {self._codes} для базы {self._base}" # noqa: E501
+            )
+
         return out

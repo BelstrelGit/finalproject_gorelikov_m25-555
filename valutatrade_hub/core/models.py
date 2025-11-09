@@ -1,15 +1,13 @@
-
-
-from typing import Optional, Dict
-# import time
 import hashlib
-from typing import Optional
+import time
+from typing import Dict, Optional
+
+from valutatrade_hub.core.exceptions import InsufficientFundsError
 
 
 def _utc_iso_now() -> str:
     """Текущее время в UTC как ISO-строка: YYYY-MM-DDTHH:MM:SS"""
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
-
 
 
 class User:
@@ -28,14 +26,15 @@ class User:
       change_password(new_password: str) -> None   # хеширует и сохраняет пароль
       verify_password(password: str) -> bool       # проверка введённого пароля
     """
+
     def __init__(
-        self,
-        user_id: int,
-        username: str,
-        hashed_password: str,
-        salt: str,
-        registration_date: str,
-        ) -> None:
+            self,
+            user_id: int,
+            username: str,
+            hashed_password: str,
+            salt: str,
+            registration_date: str,
+    ) -> None:
         self._user_id = int(user_id)
         self.username = username
         self._hashed_password = str(hashed_password)
@@ -72,7 +71,6 @@ class User:
         # ISO-строка вида 'YYYY-MM-DDTHH:MM:SS'
         return self._registration_date
 
-
     def get_user_info(self) -> dict:
         """Вернуть публичную информацию о пользователе (без пароля)."""
         return {
@@ -91,7 +89,6 @@ class User:
     def verify_password(self, password: str) -> bool:
         payload = (password + self._salt).encode("utf-8")
         return hashlib.sha256(payload).hexdigest() == self._hashed_password
-
 
     def to_dict(self) -> dict:
         """Словарь для JSON (формат как в задании)."""
@@ -115,7 +112,6 @@ class User:
         )
 
 
-
 class Wallet:
     """
     Кошелёк для одной валюты.
@@ -131,7 +127,7 @@ class Wallet:
 
     Свойства:
       balance (property): геттер/сеттер с валидацией (>= 0 и число)
-    """
+    """  # noqa: E501
 
     def __init__(self, currency_code: str, balance: float = 0.0) -> None:
         # валидируем код валюты и приводим к верхнему регистру
@@ -167,8 +163,11 @@ class Wallet:
         """Снять средства; сумма не должна превышать текущий баланс."""
         a = self._ensure_positive_amount(amount)
         if a > self._balance:
-            raise ValueError(
-                f"Недостаточно средств: доступно {self._balance:.4f} {self.currency_code}, требуется {a:.4f}"
+            # единый формат сообщения/поля — как в исключении
+            raise InsufficientFundsError(
+                code=self.currency_code,
+                available=self._balance,
+                required=a,
             )
         self._balance -= a
 
@@ -185,7 +184,7 @@ class Wallet:
         """Создать Wallet из словаря вида {'currency_code': 'BTC', 'balance': 0.05}."""
         if "currency_code" not in d:
             raise ValueError("Ожидалось поле 'currency_code' для Wallet")
-        return cls(currency_code=d["currency_code"], balance=float(d.get("balance", 0.0)))
+        return cls(currency_code=d["currency_code"], balance=float(d.get("balance", 0.0)))  # noqa: E501
 
     @staticmethod
     def _ensure_positive_amount(amount: float) -> float:
@@ -199,7 +198,6 @@ class Wallet:
 
 
 class Portfolio:
-
     """
     Управление кошельками одного пользователя.
 
@@ -217,7 +215,7 @@ class Portfolio:
       user_id (read-only)
       user    (read-only; может быть None)
       wallets (read-only; возвращает копию словаря)
-    """
+    """  # noqa: E501
 
     def __init__(
             self,
@@ -255,7 +253,8 @@ class Portfolio:
     def get_wallet(self, currency_code: str) -> "Wallet | None":
         return self._wallets.get(self._ensure_currency(currency_code))
 
-    def get_total_value(self, base_currency: str = "USD", exchange_rates: dict[str, float] | None = None) -> float:
+    def get_total_value(self, base_currency: str = "USD",
+                        exchange_rates: dict[str, float] | None = None) -> float:  # noqa: E501
         """
         Возвращает суммарную стоимость всех валют в базовой валюте.
         - Если base == code, берём баланс как есть.
@@ -296,7 +295,7 @@ class Portfolio:
         """
         return {
             "user_id": self.user_id,
-            "wallets": {code: {"balance": w.balance} for code, w in self._wallets.items()},
+            "wallets": {code: {"balance": w.balance} for code, w in self._wallets.items()},  # noqa: E501
         }
 
     @classmethod
@@ -305,7 +304,7 @@ class Portfolio:
         Принимает оба формата кошелька:
           - краткий: {"wallets": {"BTC": {"balance": 0.05}, ...}}
           - полный:  {"wallets": {"BTC": {"currency_code": "BTC", "balance": 0.05}, ...}}
-        """
+        """  # noqa: E501
         wallets: dict[str, Wallet] = {}
         raw = d.get("wallets", {}) or {}
         for code, wd in raw.items():
@@ -321,5 +320,3 @@ class Portfolio:
         if not isinstance(code, str) or not code.strip():
             raise ValueError("currency_code должен быть непустой строкой")
         return code.strip().upper()
-
-
