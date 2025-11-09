@@ -15,7 +15,8 @@ def _maybe_start_scheduler() -> None:
       VTH_SCHEDULER_INTERVAL=300       (секунды)
       VTH_SCHEDULER_SOURCE=all|coingecko|exchangerate
     """
-    enabled = os.getenv("VTH_SCHEDULER_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
+    enabled = (os.getenv("VTH_SCHEDULER_ENABLED", "false").lower() in
+               {"1", "true", "yes", "on"})
     if not enabled:
         return
 

@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "finalproject_gorelikov_М25-555"
-version = "0.1.0"
+name = "finalproject2-gorelikov-andrey-m25-555"
+version = "0.1.1"
 description = "ValutaTrade Hub: Core+CLI платформа для симуляции валютной торговли"
 authors = ["a.gorelikov <belstrel@gmail.com>"]
 readme = "README.md"

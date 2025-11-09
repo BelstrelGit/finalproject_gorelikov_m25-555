@@ -1,29 +1,40 @@
+
 from __future__ import annotations
 
-import json
-import os
-import secrets
 import hashlib
-from typing import Any, Dict, Tuple
+import secrets
+from typing import Tuple
 
 from valutatrade_hub.core.currencies import get_currency
 from valutatrade_hub.core.exceptions import (
-    InsufficientFundsError,
-    CurrencyNotFoundError,
     ApiRequestError,
+    InsufficientFundsError,
+)
+from valutatrade_hub.core.utils import (
+    flatten_rates_snapshot as _flatten_rates_snapshot,
+)
+from valutatrade_hub.core.utils import (
+    fmt_amount as _fmt_amount,
+)
+from valutatrade_hub.core.utils import (
+    is_cache_fresh as _is_cache_fresh,
 )
 from valutatrade_hub.core.utils import (
     normalize_currency_code as _cur,
+)
+from valutatrade_hub.core.utils import (
     parse_positive_amount as _pos_amount,
-    fmt_amount as _fmt_amount,
-    utc_iso_now as _utc_iso_now,
-    is_cache_fresh as _is_cache_fresh,
-    flatten_rates_snapshot as _flatten_rates_snapshot,
+)
+from valutatrade_hub.core.utils import (
     rate_from_flat as _rate_from_flat,
 )
-from valutatrade_hub.infra.settings import SettingsLoader
+from valutatrade_hub.core.utils import read_json as _load_json
+from valutatrade_hub.core.utils import (
+    utc_iso_now as _utc_iso_now,
+)
+from valutatrade_hub.core.utils import write_json as _save_json
 from valutatrade_hub.decorators import log_action
-
+from valutatrade_hub.infra.settings import SettingsLoader
 
 # -------------------- SETTINGS & PATHS --------------------
 
@@ -35,24 +46,6 @@ SESSION_PATH = _settings.get("SESSION_PATH", "data/session.json")
 RATES_PATH = _settings.get("RATES_PATH", "data/rates.json")
 
 _DEFAULT_BASE = _settings.get("DEFAULT_BASE_CURRENCY", "USD")
-
-
-# -------------------- JSON HELPERS --------------------
-
-def _load_json(path: str, default):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return default
-    except json.JSONDecodeError:
-        return default
-
-
-def _save_json(path: str, obj: Any) -> None:
-    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 # -------------------- USERS --------------------
@@ -350,12 +343,14 @@ def sell(currency: str, amount) -> str:
 
 def get_rate(frm: str, to: str) -> str:
     """
-    По ТЗ: валидация кодов через реестр; TTL из SettingsLoader; при устаревшем кэше — ApiRequestError.
+    По ТЗ: валидация кодов через реестр; TTL из SettingsLoader;
+    при устаревшем кэше — ApiRequestError.
     """
     # политика свежести
     ttl = int(_settings.get("RATES_TTL_SECONDS", 300))
     if not _cache_is_fresh(ttl):
-        raise ApiRequestError("Ошибка при обращении к внешнему API: данные курсов устарели")
+        raise ApiRequestError("Ошибка при обращении к внешнему API: "
+                              "данные курсов устарели")
 
     # валидация валют
     f = _cur(frm)

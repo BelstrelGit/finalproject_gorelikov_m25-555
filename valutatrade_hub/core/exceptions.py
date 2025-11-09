@@ -1,10 +1,4 @@
 
-
-
-# class CurrencyNotFoundError(Exception):
-#     """Запрошенный валютный код не найден в реестре."""
-#     pass
-
 class InsufficientFundsError(Exception):
     """Недостаточно средств: доступно {available} {code}, требуется {required} {code}"""
 
@@ -33,4 +27,3 @@ class ApiRequestError(Exception):
     def __init__(self, reason: str):
         self.reason = str(reason)
         super().__init__(f"Ошибка при обращении к внешнему API: {self.reason}")
-

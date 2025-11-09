@@ -1,4 +1,3 @@
-# valutatrade_hub/parser_service/api_clients.py
 from __future__ import annotations
 
 import json

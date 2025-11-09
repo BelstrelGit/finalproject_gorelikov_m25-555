@@ -1,20 +1,21 @@
+
 from __future__ import annotations
 
-import json
 import shlex
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from valutatrade_hub.core import usecases as uc
 from valutatrade_hub.core.currencies import list_supported_codes
 from valutatrade_hub.core.exceptions import (
-    InsufficientFundsError,
-    CurrencyNotFoundError,
     ApiRequestError,
+    CurrencyNotFoundError,
+    InsufficientFundsError,
 )
 from valutatrade_hub.core.utils import (
     flatten_rates_snapshot,
-    rate_from_flat,
     parse_flags,
+    rate_from_flat,
+    read_json,
 )
 from valutatrade_hub.parser_service.api_clients import (
     CoinGeckoClient,
@@ -23,7 +24,6 @@ from valutatrade_hub.parser_service.api_clients import (
 from valutatrade_hub.parser_service.config import ParserConfig
 from valutatrade_hub.parser_service.storage import RatesStorage
 from valutatrade_hub.parser_service.updater import RatesUpdater
-
 
 HELP = """Команды:
   register        --username <str> --password <str>
@@ -37,18 +37,6 @@ HELP = """Команды:
   help
   exit
 """
-
-
-# ---------- tiny JSON helper ----------
-
-def _read_json(path: str, default):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return default
-    except json.JSONDecodeError:
-        return default
 
 
 # ---------- update-rates ----------
@@ -98,7 +86,8 @@ def update_rates(argline: str = "") -> None:
 
     count = sum(1 for v in snapshot.values() if isinstance(v, dict) and "rate" in v)
     last_refresh = snapshot.get("last_refresh", "unknown")
-    print(f"Update successful. Total rates updated: {count}. Last refresh: {last_refresh}")
+    print(f"Update successful. Total rates updated: {count}. "
+          f"Last refresh: {last_refresh}")
 
 
 # ---------- show-rates ----------
@@ -109,8 +98,8 @@ def cmd_show_rates(argline: str = "") -> None:
     """
     tokens = shlex.split(argline or "")
     want_currency = None  # e.g. "BTC"
-    want_top = None       # e.g. 2
-    want_base = None      # e.g. "EUR"
+    want_top = None  # e.g. 2
+    want_base = None  # e.g. "EUR"
 
     i = 0
     while i < len(tokens):
@@ -131,9 +120,10 @@ def cmd_show_rates(argline: str = "") -> None:
             i += 1
 
     cfg = ParserConfig()
-    snapshot = _read_json(cfg.RATES_FILE_PATH, default={})
+    snapshot = read_json(cfg.RATES_FILE_PATH, default={})
     if not isinstance(snapshot, dict) or not snapshot:
-        print("Локальный кеш курсов пуст. Выполните 'update-rates', чтобы загрузить данные.")
+        print("Локальный кеш курсов пуст. Выполните 'update-rates', "
+              "чтобы загрузить данные.")
         return
 
     last_refresh = snapshot.get("last_refresh", "unknown")
@@ -243,7 +233,8 @@ def main():
             print(e)
             codes = ", ".join(list_supported_codes())
             print(f"Поддерживаемые коды: {codes}")
-            print("Подсказка: используйте 'get-rate --from USD --to <CODE>' для проверки курса.")
+            print("Подсказка: используйте 'get-rate --from USD --to <CODE>' "
+                  "для проверки курса.")
         except ApiRequestError as e:
             print(e)
             print("Попробуйте повторить позже или проверьте подключение к сети.")

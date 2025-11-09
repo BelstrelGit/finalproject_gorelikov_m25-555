@@ -1,6 +1,4 @@
 
-
-# stdlib only
 import json
 import re
 from functools import wraps
@@ -94,7 +92,7 @@ def log_action(action: str, verbose: bool = False) -> Callable:
       - error_type / error_message (при исключении)
     Пример строки:
       INFO 2025-10-09T12:05:22 BUY user='alice' currency='BTC' amount=0.0500 rate=59300.00 base='USD' result=OK
-    """ # noqa: E501
+    """  # noqa: E501
     logger = get_logger()
 
     def decorator(func: Callable):
@@ -133,5 +131,7 @@ def log_action(action: str, verbose: bool = False) -> Callable:
                 )
                 logger.info(msg)
                 raise
+
         return wrapper
+
     return decorator

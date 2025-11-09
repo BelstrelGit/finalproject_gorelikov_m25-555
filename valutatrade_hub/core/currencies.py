@@ -30,6 +30,7 @@ class Currency:
     def __repr__(self) -> str:
         return f"<Currency code={self.code} name={self.name}>"
 
+
 class FiatCurrency(Currency):
     """
     Фиатная валюта.
@@ -47,6 +48,7 @@ class FiatCurrency(Currency):
         # Пример формата: [FIAT] USD — US Dollar (Issuing: United States)
         return f"[FIAT] {self.code} — {self.name} (Issuing: {self.issuing_country})"
 
+
 class CryptoCurrency(Currency):
     """
     Криптовалюта.
@@ -55,7 +57,7 @@ class CryptoCurrency(Currency):
       - market_cap: float >= 0 (последняя известная капитализация)
     """
 
-    def __init__(self, name: str, code: str, algorithm: str, market_cap: float = 0.0) -> None: # noqa: E501
+    def __init__(self, name: str, code: str, algorithm: str, market_cap: float = 0.0) -> None:  # noqa: E501
         super().__init__(name, code)
         if not isinstance(algorithm, str) or not algorithm.strip():
             raise ValueError("algorithm должен быть непустой строкой")
@@ -73,18 +75,17 @@ class CryptoCurrency(Currency):
 
     def get_display_info(self) -> str:
         # Пример: [CRYPTO] BTC — Bitcoin (Algo: SHA-256, MCAP: 1.12e12)
-        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self.algorithm}, MCAP: {self._fmt_mcap()})" # noqa: E501
+        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self.algorithm}, MCAP: {self._fmt_mcap()})"  # noqa: E501
 
-
-# ---------- реестр / фабрика ----------
 
 # Базовый предзаполненный реестр (можно расширять register_currency)
 _REGISTRY = {
     "USD": FiatCurrency(name="US Dollar", code="USD", issuing_country="United States"),
     "EUR": FiatCurrency(name="Euro", code="EUR", issuing_country="Eurozone"),
-    "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12), # noqa: E501
-    "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=4.50e11), # noqa: E501
+    "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12),  # noqa: E501
+    "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=4.50e11),  # noqa: E501
 }
+
 
 def register_currency(currency: Currency) -> None:
     """
@@ -93,6 +94,7 @@ def register_currency(currency: Currency) -> None:
     if not isinstance(currency, Currency):
         raise ValueError("Можно регистрировать только объекты Currency")
     _REGISTRY[currency.code] = currency
+
 
 def get_currency(code: str) -> Currency:
     """
@@ -106,6 +108,7 @@ def get_currency(code: str) -> Currency:
     if cur is None:
         raise CurrencyNotFoundError(c)
     return cur
+
 
 def list_supported_codes() -> list[str]:
     return sorted(_REGISTRY.keys())

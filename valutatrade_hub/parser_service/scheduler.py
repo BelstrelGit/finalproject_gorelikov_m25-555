@@ -3,10 +3,16 @@ from __future__ import annotations
 import time
 
 from valutatrade_hub.logging_config import get_logger
-from valutatrade_hub.parser_service.api_clients import CoinGeckoClient, ExchangeRateApiClient
+from valutatrade_hub.parser_service.api_clients import (
+    CoinGeckoClient,
+    ExchangeRateApiClient,
+)
 from valutatrade_hub.parser_service.config import ParserConfig
 from valutatrade_hub.parser_service.storage import RatesStorage
 from valutatrade_hub.parser_service.updater import RatesUpdater
+
+_log = get_logger()
+
 
 _log = get_logger()
 
@@ -30,9 +36,10 @@ def _build_clients(source: str | None, cfg: ParserConfig):
 def run_scheduler(interval: int, source: str = "all", iterations: int | None = None):
     """
     Периодически запускает обновление курсов.
-    interval_sec — пауза между запусками (в секундах).
+    interval — пауза между запусками (в секундах).
     source — ограничить источником ('coingecko' | 'exchangerate'), по умолчанию оба.
-    iterations — если указано, выполнит указанное число итераций и завершится (удобно для тестов).
+    iterations — если указано, выполнит указанное число итераций
+    и завершится (удобно для тестов).
     """
     cfg = ParserConfig()
     storage = RatesStorage(cfg=cfg)

@@ -1,9 +1,14 @@
+
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 import time
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List
+
+__all__ = ["read_json", "write_json", "ensure_parent_dir"]
 
 
 # ---------- Время/TTL ----------
@@ -159,3 +164,45 @@ def parse_flags(tokens: Iterable[str]) -> Dict[str, Any]:
         else:
             i += 1
     return flags
+
+
+def ensure_parent_dir(path: str) -> None:
+    """Создаёт родительскую директорию для файла, если её нет."""
+    d = os.path.dirname(path) or "."
+    os.makedirs(d, exist_ok=True)
+
+
+def read_json(path: str, default: Any = None) -> Any:
+    """Безопасное чтение JSON. При отсутствии или битом файле вернёт default."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
+    except json.JSONDecodeError:
+        return default
+
+
+def write_json(path: str, data: Any, *, atomic: bool = True) -> None:
+    """
+    Запись JSON. По умолчанию — атомарно (tmp → rename) в той же директории.
+    """
+    ensure_parent_dir(path)
+    if not atomic:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
+        return
+
+    dir_ = os.path.dirname(path) or "."
+    fd, tmp = tempfile.mkstemp(prefix=".tmp_", dir=dir_)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
+        os.replace(tmp, path)  # атомарная подмена
+    finally:
+        # если os.replace не сработал — tmp уберётся здесь
+        if os.path.exists(tmp) and os.path.isfile(tmp):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
