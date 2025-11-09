@@ -1,6 +1,7 @@
 import json
 import time
 
+
 class SettingsLoader:
     """
     Singleton для конфигурации проекта.

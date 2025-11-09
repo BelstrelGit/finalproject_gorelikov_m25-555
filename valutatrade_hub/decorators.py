@@ -3,13 +3,11 @@
 # stdlib only
 import json
 import re
-import time
 from functools import wraps
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Tuple
 
 from valutatrade_hub.infra.settings import SettingsLoader
 from valutatrade_hub.logging_config import get_logger
-
 
 # --- helpers ---------------------------------------------------------
 
@@ -96,7 +94,7 @@ def log_action(action: str, verbose: bool = False) -> Callable:
       - error_type / error_message (при исключении)
     Пример строки:
       INFO 2025-10-09T12:05:22 BUY user='alice' currency='BTC' amount=0.0500 rate=59300.00 base='USD' result=OK
-    """
+    """ # noqa: E501
     logger = get_logger()
 
     def decorator(func: Callable):

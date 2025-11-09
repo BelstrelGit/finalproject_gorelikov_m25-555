@@ -1,5 +1,6 @@
 from valutatrade_hub.core.exceptions import CurrencyNotFoundError
 
+
 class Currency:
     """
     Абстрактный базовый класс валюты (без импорта abc).
@@ -54,7 +55,7 @@ class CryptoCurrency(Currency):
       - market_cap: float >= 0 (последняя известная капитализация)
     """
 
-    def __init__(self, name: str, code: str, algorithm: str, market_cap: float = 0.0) -> None:
+    def __init__(self, name: str, code: str, algorithm: str, market_cap: float = 0.0) -> None: # noqa: E501
         super().__init__(name, code)
         if not isinstance(algorithm, str) or not algorithm.strip():
             raise ValueError("algorithm должен быть непустой строкой")
@@ -72,7 +73,7 @@ class CryptoCurrency(Currency):
 
     def get_display_info(self) -> str:
         # Пример: [CRYPTO] BTC — Bitcoin (Algo: SHA-256, MCAP: 1.12e12)
-        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self.algorithm}, MCAP: {self._fmt_mcap()})"
+        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self.algorithm}, MCAP: {self._fmt_mcap()})" # noqa: E501
 
 
 # ---------- реестр / фабрика ----------
@@ -81,8 +82,8 @@ class CryptoCurrency(Currency):
 _REGISTRY = {
     "USD": FiatCurrency(name="US Dollar", code="USD", issuing_country="United States"),
     "EUR": FiatCurrency(name="Euro", code="EUR", issuing_country="Eurozone"),
-    "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12),
-    "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=4.50e11),
+    "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12), # noqa: E501
+    "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=4.50e11), # noqa: E501
 }
 
 def register_currency(currency: Currency) -> None:

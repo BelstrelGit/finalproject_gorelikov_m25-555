@@ -1,51 +1,77 @@
 # stdlib only
+import hashlib
 import json
 import time
-import hashlib
-from valutatrade_hub.decorators import log_action
-
-
 
 # новенькое
 from valutatrade_hub.core.currencies import get_currency
 from valutatrade_hub.core.exceptions import (
-    InsufficientFundsError,
-    CurrencyNotFoundError,
     ApiRequestError,
+    InsufficientFundsError,
 )
 from valutatrade_hub.core.models import Wallet
 from valutatrade_hub.decorators import log_action
 from valutatrade_hub.infra.settings import SettingsLoader
 
-
-from valutatrade_hub.core.exceptions import (
-    InsufficientFundsError,
-    CurrencyNotFoundError,
-    ApiRequestError,
-)
-from valutatrade_hub.core.currencies import get_currency
-
 # ДОБАВИТЬ:
-from valutatrade_hub.infra.settings import SettingsLoader
 
 # создать singleton (если он уже создан в другом месте, вернётся тот же инстанс)
 
-from valutatrade_hub.infra.settings import SettingsLoader
 
 _settings = SettingsLoader()
 
-USERS_PATH      = _settings.get("USERS_PATH", "data/users.json")
+USERS_PATH = _settings.get("USERS_PATH", "data/users.json")
 PORTFOLIOS_PATH = _settings.get("PORTFOLIOS_PATH", "data/portfolios.json")
-SESSION_PATH    = _settings.get("SESSION_PATH", "data/session.json")
-RATES_PATH      = _settings.get("RATES_PATH", "data/rates.json")
+SESSION_PATH = _settings.get("SESSION_PATH", "data/session.json")
+RATES_PATH = _settings.get("RATES_PATH", "data/rates.json")
 
 _DEFAULT_BASE = _settings.get("DEFAULT_BASE_CURRENCY", "USD")
-_RATES_TTL    = int(_settings.get("RATES_TTL_SECONDS", 300))
-
+_RATES_TTL = int(_settings.get("RATES_TTL_SECONDS", 300))
 
 
 # (опционально) можно использовать дефолтную базовую валюту:
 # DEFAULT_BASE = _settings.default_base_currency()
+
+# --- свежесть кэша: epoch -> bool ---
+# --- helpers: извлекаем метку времени из snapshot (epoch с фоллбэком на ISO) ---
+def _snapshot_epoch(snap: dict) -> int:
+    """Возвращает last_refresh_epoch, а при его отсутствии парсит last_refresh (ISO)."""
+    try:
+        e = int(snap.get("last_refresh_epoch", 0))
+        if e > 0:
+            return e
+    except Exception:
+        pass
+
+    ts = str(snap.get("last_refresh", "")).strip()
+    if ts:
+        # ожидаем формат 'YYYY-MM-DDTHH:MM:SS[...]', берём первые 19 символов
+        try:
+            t = time.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
+            return int(time.mktime(t))
+        except Exception:
+            pass
+    return 0
+
+
+def _rates_are_fresh(snap: dict, ttl_seconds: int) -> bool:
+    e = _snapshot_epoch(snap)
+    if e <= 0:
+        return False
+    now = int(time.time())
+    return (now - e) <= int(ttl_seconds)
+
+
+def _cache_is_fresh(ttl_sec: int) -> bool:
+    snap = _load_json(RATES_PATH, {})
+    try:
+        ts = int(snap.get("last_refresh_epoch", 0))
+    except Exception:
+        ts = 0
+    if ts <= 0:
+        return False
+    now = int(time.time())
+    return (now - ts) <= int(ttl_sec)
 
 
 # ---------- json helpers ----------
@@ -56,19 +82,23 @@ def _load_json(path, default):
     except FileNotFoundError:
         return default
 
+
 def _save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
 
 # ---------- time ----------
 def _utc_iso_now() -> str:
     # ISO без таймзоны (UTC)
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
 
+
 # ---------- user utils ----------
 def _generate_salt(username: str) -> str:
     raw = f"{username}|{time.time_ns()}".encode("utf-8")
     return hashlib.sha256(raw).hexdigest()[:16]
+
 
 def _find_user_by_username(username: str):
     users = _load_json(USERS_PATH, [])
@@ -76,6 +106,7 @@ def _find_user_by_username(username: str):
         if u.get("username") == username:
             return u
     return None
+
 
 def _next_user_id() -> int:
     users = _load_json(USERS_PATH, [])
@@ -89,19 +120,23 @@ def _next_user_id() -> int:
             pass
     return max_id + 1
 
+
 # ---------- session ----------
 def _get_session() -> dict:
     s = _load_json(SESSION_PATH, {})
     return s if isinstance(s, dict) and "user_id" in s and "username" in s else {}
 
+
 def _set_session(user_id: int, username: str) -> None:
     _save_json(SESSION_PATH, {"user_id": int(user_id), "username": str(username)})
+
 
 def _require_session() -> dict:
     s = _get_session()
     if not s:
         raise ValueError("Сначала выполните login")
     return s
+
 
 # ---------- portfolio I/O ----------
 def _load_user_portfolio(user_id: int) -> dict:
@@ -118,6 +153,7 @@ def _load_user_portfolio(user_id: int) -> dict:
             pass
     return {}
 
+
 def _save_user_portfolio(user_id: int, wallets: dict) -> None:
     ports = _load_json(PORTFOLIOS_PATH, [])
     updated = False
@@ -132,6 +168,7 @@ def _save_user_portfolio(user_id: int, wallets: dict) -> None:
     if not updated:
         ports.append({"user_id": int(user_id), "wallets": wallets})
     _save_json(PORTFOLIOS_PATH, ports)
+
 
 # ---------- rates ----------
 def _load_rates_map() -> dict:
@@ -155,6 +192,7 @@ def _load_rates_map() -> dict:
                     pass
     return flat
 
+
 def _load_rates_full() -> dict:
     """
     Полный вид с updated_at:
@@ -168,10 +206,11 @@ def _load_rates_full() -> dict:
                 continue
             if isinstance(v, dict) and "rate" in v:
                 try:
-                    out[k] = {"rate": float(v["rate"]), "updated_at": str(v.get("updated_at", ""))}
+                    out[k] = {"rate": float(v["rate"]), "updated_at": str(v.get("updated_at", ""))}  # noqa: E501
                 except Exception:
                     pass
     return out
+
 
 def _has_any_rate_for_base(base: str, rates: dict) -> bool:
     base = base.upper()
@@ -179,6 +218,7 @@ def _has_any_rate_for_base(base: str, rates: dict) -> bool:
         if k.endswith(f"_{base}") or k.startswith(f"{base}_"):
             return True
     return False
+
 
 def _get_rate(code: str, base: str, rates: dict) -> float:
     """Для show-portfolio: ищем прямой CODE_BASE, иначе инвертируем BASE_CODE."""
@@ -193,6 +233,7 @@ def _get_rate(code: str, base: str, rates: dict) -> float:
     if inv in rates and float(rates[inv]) != 0.0:
         return 1.0 / float(rates[inv])
     raise ValueError(f"Нет курса для пары {code}→{base}")
+
 
 def _get_rate_pair(frm: str, to: str) -> tuple[float, str]:
     """
@@ -217,11 +258,13 @@ def _get_rate_pair(frm: str, to: str) -> tuple[float, str]:
         return 1.0 / float(rec["rate"]), str(rec.get("updated_at", ""))
     raise ValueError(f"Курс {frm}→{to} недоступен. Повторите попытку позже.")
 
+
 # ---------- validators/format ----------
 def _cur(code: str) -> str:
     if not isinstance(code, str) or not code.strip():
         raise ValueError("Код валюты должен быть непустой строкой")
     return code.strip().upper()
+
 
 def _pos_amount(x) -> float:
     try:
@@ -232,13 +275,16 @@ def _pos_amount(x) -> float:
         raise ValueError("'amount' должен быть положительным числом")
     return v
 
+
 def _fmt_amount(x: float) -> str:
     return f"{x:.4f}" if abs(x) < 1 else f"{x:.2f}"
+
 
 def _currency_ok(code: str) -> str:
     if not isinstance(code, str) or not code.strip():
         raise ValueError("Неизвестная базовая валюта ''")
     return code.strip().upper()
+
 
 # ============== PUBLIC USECASES ==============
 
@@ -271,7 +317,8 @@ def register(username: str, password: str) -> str:
     ports.append({"user_id": user_id, "wallets": {}})
     _save_json(PORTFOLIOS_PATH, ports)
 
-    return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"
+    return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"  # noqa: E501
+
 
 @log_action("LOGIN")
 def login(username: str, password: str) -> str:
@@ -293,9 +340,11 @@ def login(username: str, password: str) -> str:
     _set_session(int(u["user_id"]), username)
     return f"Вы вошли как '{username}'"
 
+
 def show_portfolio(base_currency: str = None) -> str:
     sess = _require_session()
-    user_id = int(sess["user_id"]); username = str(sess["username"])
+    user_id = int(sess["user_id"])
+    username = str(sess["username"])
 
     # если не передали --base, берём из Singleton-настроек
     base = _currency_ok(base_currency) if base_currency else _currency_ok(_DEFAULT_BASE)
@@ -343,15 +392,15 @@ def show_portfolio(base_currency: str = None) -> str:
     lines.append(f"ИТОГО: {total:,.2f} {base}")
     return "\n".join(lines)
 
+
 @log_action("BUY", verbose=True)
 def buy(currency: str, amount) -> str:
     sess = _require_session()
     user_id = int(sess["user_id"])
-    username = str(sess["username"])
 
     # валидация кода валюты через реестр
     code = _cur(currency)  # проверка формата
-    get_currency(code)     # бросит CurrencyNotFoundError при неизвестном коде
+    get_currency(code)  # бросит CurrencyNotFoundError при неизвестном коде
 
     # валидация amount
     amt = _pos_amount(amount)
@@ -361,7 +410,7 @@ def buy(currency: str, amount) -> str:
 
     # текущие значения
     prev_code = float(wallets.get(code, {}).get("balance", 0.0))
-    prev_usd  = float(wallets.get("USD", {}).get("balance", 0.0))
+    prev_usd = float(wallets.get("USD", {}).get("balance", 0.0))
 
     # курс currency->USD (для оценочной стоимости)
     try:
@@ -376,7 +425,7 @@ def buy(currency: str, amount) -> str:
 
     # применяем через Wallet API
     w_code = Wallet(currency_code=code, balance=prev_code)
-    w_usd  = Wallet(currency_code="USD", balance=prev_usd)
+    w_usd = Wallet(currency_code="USD", balance=prev_usd)
 
     w_code.deposit(amt)
     # снимем нужные USD (мы уже проверили баланс выше)
@@ -400,7 +449,6 @@ def buy(currency: str, amount) -> str:
 def sell(currency: str, amount) -> str:
     sess = _require_session()
     user_id = int(sess["user_id"])
-    username = str(sess["username"])
 
     code = _cur(currency)
     if code == "USD":
@@ -414,7 +462,7 @@ def sell(currency: str, amount) -> str:
     wallets = _load_user_portfolio(user_id)
 
     prev_code = float(wallets.get(code, {}).get("balance", 0.0))
-    prev_usd  = float(wallets.get("USD", {}).get("balance", 0.0))
+    prev_usd = float(wallets.get("USD", {}).get("balance", 0.0))
 
     if prev_code < amt:
         # по ТЗ — InsufficientFundsError
@@ -428,9 +476,9 @@ def sell(currency: str, amount) -> str:
     revenue_usd = amt * rate
 
     w_code = Wallet(currency_code=code, balance=prev_code)
-    w_usd  = Wallet(currency_code="USD", balance=prev_usd)
+    w_usd = Wallet(currency_code="USD", balance=prev_usd)
 
-    w_code.withdraw(amt)     # может бросить ValueError, но мы уже проверили баланс
+    w_code.withdraw(amt)  # может бросить ValueError, но мы уже проверили баланс
     w_usd.deposit(revenue_usd)
 
     wallets[code] = {"balance": w_code.balance}
@@ -445,43 +493,33 @@ def sell(currency: str, amount) -> str:
         f"Оценочная выручка: {revenue_usd:.2f} USD"
     )
 
+
 def get_rate(frm: str, to: str) -> str:
+    # TTL берём из SettingsLoader; делаем локальный импорт, чтобы исключить циклы
+    try:
+        from valutatrade_hub.infra.settings import SettingsLoader
+        ttl = int(SettingsLoader().get("RATES_TTL_SECONDS", 300))
+    except Exception:
+        ttl = 300
+
     f = _cur(frm)
     t = _cur(to)
 
-    # валидация валют через реестр (может кинуть CurrencyNotFoundError)
+    # валидируем через реестр валют (может бросить CurrencyNotFoundError)
     get_currency(f)
     get_currency(t)
 
-    # проверка свежести кеша
-    raw = _get_rates_raw()
-    last_refresh = ""
-    if isinstance(raw, dict):
-        last_refresh = str(raw.get("last_refresh") or "")
+    # читаем снапшот и проверяем свежесть
+    raw = _load_json(RATES_PATH, {})
+    if not isinstance(raw, dict) or not raw or not _rates_are_fresh(raw, ttl):
+        # формулировка под ТЗ/CLI
+        raise ApiRequestError("данные курсов устарели")
 
-    if _is_stale(last_refresh, _RATES_TTL):
-        # пробуем «обновить» (на этом этапе заглушка)
-        ok = _maybe_refresh_rates()
-        if not ok:
-            raise ApiRequestError("данные курсов устарели")
-
-    # курс и метка времени пары
+    # получаем сам курс и метку времени пары
     rate, ts = _get_rate_pair(f, t)
-    # <-- ЗДЕСЬ точка применения Singleton-политики свежести
-    # if ts:
-    #     try:
-    #         ts_struct = time.strptime(ts, "%Y-%m-%dT%H:%M:%S")  # предполагаем UTC-строку
-    #         ts_sec = time.mktime(ts_struct)  # упрощённо; или оставить пометку TODO
-    #         if time.time() - ts_sec > _RATES_TTL:
-    #             # здесь можно: либо предупредить, либо инициировать обновление из Parser Service
-    #             # raise ApiRequestError("данные курсов устарели")  # если нужно жёстко
-    #             pass
-    #     except Exception:
-    #         pass
 
     back_rate = 1.0 if rate == 0 else (1.0 / rate)
     ts_str = ts if ts else "неизвестно"
-
     return (
         f"Курс {f}→{t}: {rate:.8f} (обновлено: {ts_str})\n"
         f"Обратный курс {t}→{f}: {back_rate:.5f}"
@@ -498,10 +536,12 @@ def _parse_iso(ts: str) -> float:
     except Exception:
         return 0.0
 
+
 def _is_stale(ts: str, ttl: int) -> bool:
     if not ts:
         return True
     return (time.time() - _parse_iso(ts)) > ttl
+
 
 def _maybe_refresh_rates() -> bool:
     """
@@ -509,6 +549,7 @@ def _maybe_refresh_rates() -> bool:
     Возвращаем False — чтобы сработал ApiRequestError при устаревшем кешe.
     """
     return False
+
 
 def _get_rates_raw() -> dict:
     """Возвращает raw словарь из rates.json (со служебными полями)."""
